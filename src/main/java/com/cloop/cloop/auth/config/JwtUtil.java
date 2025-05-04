@@ -43,7 +43,7 @@ public class JwtUtil {
                 .claim("nickname", nickname)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_TIME))
-                .signWith(SIGNING_KEY, SignatureAlgorithm.ES256)
+                .signWith(SIGNING_KEY, SignatureAlgorithm.HS256)
                 .compact();
     }
 

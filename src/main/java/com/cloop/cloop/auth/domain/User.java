@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "users")       //user: 예약어 -> users라고 테이블명 셋팅
+@Table(name = "`user`")
 @Getter
 @Setter
 @NoArgsConstructor

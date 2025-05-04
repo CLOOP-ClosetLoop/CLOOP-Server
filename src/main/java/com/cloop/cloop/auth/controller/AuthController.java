@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,6 +56,36 @@ public class AuthController {
                 "status", "회원가입이 필요합니다,",
                 "googleId", googleId
         ));
+    }
+
+    @PostMapping("/google/signup")
+    public ResponseEntity<?> googleSignUp(@RequestBody Map<String, Object> requestBody) {
+        try {
+            String googleId = (String) requestBody.get("googleId");
+            String nickname = (String) requestBody.get("nickname");
+            String gender = (String) requestBody.get("gender");
+
+            User newUser = new User();
+            newUser.setGoogleId(googleId);
+            newUser.setNickname(nickname);
+            newUser.setGender(gender);
+
+            User savedUser = userRepository.save(newUser);
+
+            String accessToken = jwtUtil.generateToken(savedUser.getUserId(), savedUser.getNickname());
+            String refreshToken = jwtUtil.generateRefreshToken(savedUser.getUserId());
+
+            return ResponseEntity.ok(Map.of(
+                    "userId", savedUser.getUserId(),
+                    "nickname", savedUser.getNickname(),
+                    "accessToken", accessToken,
+                    "refreshToken", refreshToken
+            ));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(Map.of("error", "회원가입 처리 중 서버 오류 발생"));
+        }
     }
 
     // Google ID 토큰에서 Google ID 추출
