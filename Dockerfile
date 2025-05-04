@@ -8,7 +8,7 @@ WORKDIR /app
 # JAR 파일, 설정 파일 컨테이너로 복사
 COPY cloop-0.0.1-SNAPSHOT.jar /app/app.jar
 COPY application.yml /app/config/application.yml
-COPY .env /app/
+#COPY .env /app/
 
 EXPOSE 8080
 
