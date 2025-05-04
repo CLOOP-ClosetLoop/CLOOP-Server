@@ -6,16 +6,16 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # JAR 파일, 설정 파일 컨테이너로 복사
-COPY cloop-0.0.1-SNAPSHOT.jar /app/app.jar
-COPY application.yml /app/config/application.yml
+COPY build/libs/cloop-0.0.1-SNAPSHOT.jar /app/app.jar
+COPY src/main/resources/application.yml /app/config/application.yml
 #COPY .env /app/
 
 EXPOSE 8080
 
 # 컨테이너 실행 시 명령어
-ENTRYPOINT [
-  "java",
-  "-jar",
-  "-Dspring.config.location=/app/config/application.yml",
-  "/app/app.jar"
+ENTRYPOINT [ \
+  "java", \
+  "-jar", \
+  "-Dspring.config.location=/app/config/application.yml", \
+  "/app/app.jar" \
 ]
