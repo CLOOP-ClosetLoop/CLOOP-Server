@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: cloop-container
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: cloop
+    ports:
+      - "3306:3306"
+    volumes:
+      - cloop-data:/var/lib/mysql
+
+volumes:
+  cloop-data:
