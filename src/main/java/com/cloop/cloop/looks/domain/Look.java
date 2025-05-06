@@ -7,7 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name="look")
@@ -21,8 +23,12 @@ public class Look {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long lookId;
 
-    @Column(nullable = false)
-    private String photo;
+//    @Column(nullable = false)
+//    private String photo;
+
+    // 착장 당 여러 개의 사진을 등록할 수 있음 -> 1 : N
+    @OneToMany(mappedBy = "look", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LookImage> lookImageList = new ArrayList<>();
 
     @Column(nullable = false)
     private Date createdAt;
