@@ -9,11 +9,11 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Map;
 import java.util.Optional;
 
@@ -86,6 +86,29 @@ public class AuthController {
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of("error", "회원가입 처리 중 서버 오류 발생"));
         }
+    }
+
+    // Access Token 재발급
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody Map<String, Object> requestBody) {
+        String refreshToken = (String) requestBody.get("refreshToken");
+        String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
+
+        if (newAccessToken == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired refresh token"));
+        }
+
+        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+
+        Long userId = (Long) request.getAttribute("userId");
+        jwtUtil.revokeRefreshToken(userId);
+
+        return ResponseEntity.ok(Map.of("message", "logout success"));
+
     }
 
     // Google ID 토큰에서 Google ID 추출
