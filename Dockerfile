@@ -16,6 +16,6 @@ EXPOSE 8080
 ENTRYPOINT [ \
   "java", \
   "-jar", \
-  "-Dspring.config.location=/app/config/application.yml", \
+#  "-Dspring.config.location=/app/config/application.yml", \
   "/app/app.jar" \
 ]
