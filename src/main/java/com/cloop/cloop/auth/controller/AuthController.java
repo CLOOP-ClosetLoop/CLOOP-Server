@@ -88,6 +88,19 @@ public class AuthController {
         }
     }
 
+    // Access Token 재발급
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody Map<String, Object> requestBody) {
+        String refreshToken = (String) requestBody.get("refreshToken");
+        String newAccessToken = jwtUtil.refreshAccessToken(refreshToken);
+
+        if (newAccessToken == null) {
+            return ResponseEntity.status(401).body(Map.of("error", "Invalid or expired refresh token"));
+        }
+
+        return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+    }
+
     // Google ID 토큰에서 Google ID 추출
     private String extractGoogleIdFromToken(String idToken) {
         try {
