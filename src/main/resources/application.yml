@@ -21,7 +21,6 @@ spring:
     resources:
       static-locations: file:uploads/
 
-
 google:
   client-ids:
     - "407408718192.apps.googleusercontent.com" #웹 애플리케이션용
@@ -39,3 +38,4 @@ springdoc:
 gemini:
   api:
     key: ${GEMINI_API_KEY}
+
