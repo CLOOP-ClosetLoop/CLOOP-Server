@@ -20,7 +20,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
