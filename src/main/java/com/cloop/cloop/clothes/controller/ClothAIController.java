@@ -28,15 +28,20 @@ public class ClothAIController {
 
     private final GeminiService geminiService;
 
-    @Operation(summary = "AI로 옷 카테고리 분류", description = "이미지 파일을 기반으로 옷의 카테고리와 색상을 예측합니다.")
-    @PostMapping(value = "/ai", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> classifyCloth(@RequestParam("image") MultipartFile file) {
-        try {
-            AIClothPredictionResponse result = geminiService.classifyClothing(file);
-            return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("분석 실패: " + e.getMessage());
-        }
+    @Operation(summary = "옷 이미지 업로드", description = "이미지를 업로드하고 접근 가능한 URL을 반환합니다.")
+    @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Map<String, String>> uploadImage(@RequestParam("image") MultipartFile file) {
+        return ResponseEntity.ok(geminiService.uploadImage(file));
     }
+
+    @Operation(summary = "AI로 옷 카테고리 분류", description = "이미지 URL을 기반으로 옷의 카테고리와 색상을 예측합니다.")
+    @PostMapping("/ai")
+    public ResponseEntity<?> classifyCloth(@RequestBody Map<String, String> request) {
+        String imageUrl = request.get("imageUrl");
+        if (imageUrl == null || imageUrl.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "imageUrl이 필요합니다."));
+        }
+        return ResponseEntity.ok(geminiService.classifyClothingByUrl(imageUrl));
+    }
+
 }
