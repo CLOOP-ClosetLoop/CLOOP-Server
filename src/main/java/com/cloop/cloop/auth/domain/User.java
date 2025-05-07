@@ -1,30 +1,29 @@
 package com.cloop.cloop.auth.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Table(name = "`user`")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table(name = "User", uniqueConstraints = {
-        @UniqueConstraint(columnNames = "googleId"),
-        @UniqueConstraint(columnNames = "nickname")
-})
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String googleId;
 
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false, length = 8)
     private String nickname;
 
-    @Column(length = 20, nullable = false)
+    @Column(nullable = false)
     private String gender;
 }
