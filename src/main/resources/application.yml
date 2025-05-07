@@ -17,6 +17,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  web:
+    resources:
+      static-locations: file:uploads/
+
 
 google:
   client-ids:
@@ -27,3 +31,11 @@ logging:
   level:
     org.springframework.jdbc.datasource.DriverManagerDataSource: DEBUG
     org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator: DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+gemini:
+  api:
+    key: ${GEMINI_API_KEY}
