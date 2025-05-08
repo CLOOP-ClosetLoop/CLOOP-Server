@@ -42,6 +42,7 @@ public class SecurityConfig {
                                          "/webjars/**",
                                          "/configuration/**").permitAll()
                         .requestMatchers("/auth/google", "/auth/google/signup", "/auth/refresh", "/looks/image").permitAll()
+
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
