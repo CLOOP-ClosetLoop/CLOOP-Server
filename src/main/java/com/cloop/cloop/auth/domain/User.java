@@ -33,5 +33,4 @@ public class User {
     // 착장 테이블과 1:N 관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Look> looks;
-
 }
