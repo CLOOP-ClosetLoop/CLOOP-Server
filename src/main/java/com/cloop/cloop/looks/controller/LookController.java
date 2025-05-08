@@ -1,5 +1,6 @@
 package com.cloop.cloop.looks.controller;
 
+import com.cloop.cloop.global.file.FileHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,6 @@ public class LookController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "이미지 업로드 실패: " + e.getMessage()));
         }
-    }
-
-    @PostMapping("/test-upload")
-    public ResponseEntity<?> upload(@RequestPart("image") MultipartFile image) {
-        return ResponseEntity.ok(Map.of(
-                "filename", image,
-                "size", image.getSize()
-        ));
     }
 
 }

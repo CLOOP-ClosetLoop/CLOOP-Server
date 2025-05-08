@@ -1,4 +1,4 @@
-package com.cloop.cloop.looks.controller;
+package com.cloop.cloop.global.file;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
