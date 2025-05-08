@@ -29,12 +29,22 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
+                .formLogin(form -> form.disable()) //기본 로그인창 없앰
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/google", "/auth/google/signup", "/auth/refresh", "/swagger-ui/**","/v3/api-docs/**", "/uploads/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/auth/google",
+                                         "/auth/google/signup",
+                                         "/auth/refresh",
+                                         "/swagger-ui/**",
+                                         "/v3/api-docs/**",
+                                         "/uploads/**",
+                                         "/swagger-ui.html",
+                                         "/swagger-resources/**",
+                                         "/webjars/**",
+                                         "/configuration/**").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.disable()) //기본 로그인창 없앰
+
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(new Http403ForbiddenEntryPoint()))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);

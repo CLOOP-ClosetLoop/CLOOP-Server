@@ -24,6 +24,7 @@ jobs:
             cd CLOOP-Server
             git pull origin main
             ./gradlew build -x test
-            docker-compose down
-            docker-compose up --build -d
+            docker-compose down --remove-orphans
+            docker-compose build --no-cache
+            docker-compose up -d
           EOF
