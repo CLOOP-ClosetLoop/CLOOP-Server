@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Base64;
-
 @Entity
 @Table(name= "lookImage")       // image 엔티티를 상속 받아 자식 테이블로 생성
 @Getter
