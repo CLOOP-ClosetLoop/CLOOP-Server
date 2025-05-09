@@ -1,16 +1,20 @@
 package com.cloop.cloop.clothes.service;
 
+import com.cloop.cloop.auth.domain.User;
+import com.cloop.cloop.clothes.domain.Category;
+import com.cloop.cloop.clothes.domain.Cloth;
+import com.cloop.cloop.clothes.domain.Season;
 import com.cloop.cloop.clothes.dto.AIClothPredictionResponse;
+import com.cloop.cloop.clothes.repository.ClothRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -20,10 +24,12 @@ import java.util.UUID;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import com.cloop.cloop.clothes.dto.ClothCreateRequest;
+import com.cloop.cloop.clothes.dto.ClothCreateResponse;
 @Service
-public class GeminiService {
-
+@RequiredArgsConstructor
+public class ClothService {
+    private final ClothRepository clothRepository;
     @Value("${gemini.api.key}")
     private String apiKey;
 
@@ -52,16 +58,33 @@ public class GeminiService {
             String imageBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
             String prompt = """
-                이 옷의 카테고리와 색상을 예측해서 JSON 형식으로 출력해줘.
-                카테고리는 TOP, BOTTOM, OUTER, SHOES 중 하나,
-                색상은 WHITE, BLACK, RED 등 일반적인 색상으로.
-                반환 형식은 다음과 같아:
-
-                { "predictedCategory": "TOP", "predictedColor": "WHITE", "confidence": 0.91 }
-
-                JSON 이외의 다른 말은 하지마.
-                """;
-
+            이미지에 있는 옷에 대해 다음 정보를 영어로 JSON 형식으로 생성해줘.
+            
+            1. 옷의 전체적인 색상을 예측해줘. (예: WHITE, BLACK, BLUE 등)
+            
+            2. 옷의 카테고리를 다음 중 하나로 예측해줘:
+               - TOP, BOTTOM, OUTER, SHOES, BAG, HAT, ETC
+               (반드시 이 목록 중 하나만 선택해서 반환할 것)
+            
+            3. 옷의 계절을 예측해줘: SUMMER 또는 WINTER 중 하나로만
+            
+            4. 위 정보를 바탕으로 스타일이 느껴지는 감성적인 영어 이름을 하나 생성해줘. 
+               이름은 다음과 같은 형식으로 만들어:
+               "{COLOR}_{STYLE_TAG}_{CATEGORY}"
+               - STYLE_TAG는 감성적이고 분위기를 표현하는 영어 단어 중 하나로 해줘 (예: 부드럽거나 사랑스럽거나 빈티지한 느낌)
+            
+            결과는 아래 JSON 형식으로 영어로 정확히 반환해줘:
+            
+            {
+              "predictedName": "WHITE_BLOSSOM_TOP",
+              "predictedColor": "WHITE",
+              "predictedCategory": "TOP",
+              "predictedSeason": "SUMMER",
+              "confidence": 0.91
+            }
+            
+            ⚠️ 다른 문장이나 설명은 절대 하지 말고 JSON만 정확하게 반환해.
+            """;
             ObjectMapper mapper = new ObjectMapper();
             String escapedPrompt = mapper.writeValueAsString(prompt);
 
@@ -105,8 +128,10 @@ public class GeminiService {
             JsonNode resultNode = mapper.readTree(resultJson);
 
             return AIClothPredictionResponse.builder()
+                    .predictedName(resultNode.path("predictedName").asText())
                     .predictedCategory(resultNode.path("predictedCategory").asText())
                     .predictedColor(resultNode.path("predictedColor").asText())
+                    .predictedSeason(resultNode.path("predictedSeason").asText())
                     .confidence(resultNode.path("confidence").asDouble())
                     .build();
 
@@ -118,80 +143,31 @@ public class GeminiService {
     private String extractFilename(String imageUrl) {
         return Paths.get(URI.create(imageUrl).getPath()).getFileName().toString();
     }
-//    public AIClothPredictionResponse classifyClothing(MultipartFile file) throws IOException, InterruptedException {
-//        String endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
-//
-//        String prompt = """
-//                이 옷의 카테고리와 색상을 예측해서 JSON 형식으로 출력해줘.
-//                카테고리는 TOP, BOTTOM, OUTER, SHOES 중 하나,
-//                색상은 WHITE, BLACK, RED 등 일반적인 색상으로.
-//                반환 형식은 다음과 같아:
-//
-//                { "predictedCategory": "TOP", "predictedColor": "WHITE", "confidence": 0.91 }
-//
-//                JSON 이외의 다른 말은 하지마.
-//                """;
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//        String escapedPrompt = mapper.writeValueAsString(prompt); // 이스케이프된 문자열 생성
-//        String imageBase64 = encodeImage(file);
-//
-//        String requestBody = "{"
-//                + "\"contents\": [{"
-//                + "  \"parts\": ["
-//                + "    {\"text\": " + escapedPrompt + "},"
-//                + "    {\"inlineData\": {\"mimeType\": \"" + file.getContentType() + "\", \"data\": \"" + imageBase64 + "\"}}"
-//                + "  ]"
-//                + "}]"
-//                + "}";
-//
-//        HttpClient client = HttpClient.newHttpClient();
-//        HttpRequest request = HttpRequest.newBuilder()
-//                .uri(URI.create(endpoint))
-//                .header("Content-Type", "application/json")
-//                .POST(HttpRequest.BodyPublishers.ofString(requestBody))
-//                .build();
-//
-//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-//
-//        // 응답 출력 로그
-//        System.out.println("Gemini 응답: " + response.body());
-//
-//        JsonNode root = mapper.readTree(response.body());
-//
-//        JsonNode candidates = root.path("candidates");
-//        if (!candidates.isArray() || candidates.size() == 0) {
-//            throw new RuntimeException("AI 응답에 candidates 없음: " + response.body());
-//        }
-//
-//        JsonNode parts = candidates.get(0).path("content").path("parts");
-//        if (!parts.isArray() || parts.size() == 0) {
-//            throw new RuntimeException("AI 응답의 parts 없음: " + response.body());
-//        }
-//
-//        // 🔧 마크다운 백틱 제거 + 공백 제거
-//        String rawText = parts.get(0).path("text").asText();
-//        String resultJson = rawText
-//                .replaceAll("```json", "")
-//                .replaceAll("```", "")
-//                .trim();
-//
-//        // text 안에 있는 JSON 문자열 다시 파싱
-//        JsonNode resultNode = mapper.readTree(resultJson);
-//        String category = resultNode.path("predictedCategory").asText();
-//        String color = resultNode.path("predictedColor").asText();
-//        double confidence = resultNode.path("confidence").asDouble();
-//
-//        return AIClothPredictionResponse.builder()
-//                .predictedCategory(category)
-//                .predictedColor(color)
-//                .confidence(confidence)
-//                .build();
-//    }
-//
-//    private String encodeImage(MultipartFile file) throws IOException {
-//        byte[] bytes = file.getBytes();
-//        return Base64.getEncoder().encodeToString(bytes);
-//    }
 
+    //옷등록하기
+    public ClothCreateResponse createCloth(ClothCreateRequest req, User user) {
+
+        if (req.getClothName() == null || req.getCategory() == null || req.getColor() == null || req.getSeason() == null) {
+            throw new IllegalArgumentException("필수 정보를 모두 입력해 주세요.");
+        }
+
+        Cloth cloth = Cloth.builder()
+                .user(user)
+                .clothName(req.getClothName())
+                .category(Category.valueOf(req.getCategory().toUpperCase()))
+                .brand(req.getBrand())
+                .color(req.getColor())
+                .season(Season.valueOf(req.getSeason().toUpperCase()))
+                .purchasedAt(req.getPurchasedAt())
+                .imageUrl(req.getImageUrl())
+                .donated(false)
+                .build();
+
+        Cloth saved = clothRepository.save(cloth);
+
+        return ClothCreateResponse.builder()
+                .clothId(saved.getClothId())
+                .message("Cloth created successfully")
+                .build();
+    }
 }
