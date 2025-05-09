@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/google", "/auth/google/signup", "/auth/refresh").permitAll()
+                        .requestMatchers("/auth/google", "/auth/google/signup", "/auth/refresh", "/looks/image").permitAll()
                         .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
