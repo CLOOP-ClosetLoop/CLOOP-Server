@@ -22,8 +22,15 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
             cd CLOOP-Server
+
+            # 작업 디렉토리 안의 변경사항을 모두 삭제
+            git reset --hard
+            git clean -fd  # 비추적 파일도 삭제됨
+
             git pull origin main
+
             ./gradlew build -x test
+
             docker-compose down --remove-orphans
             docker-compose build --no-cache
             docker-compose up -d

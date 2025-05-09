@@ -72,7 +72,7 @@ public class ClothService {
                이름은 다음과 같은 형식으로 만들어:
                "{COLOR}_{STYLE_TAG}_{CATEGORY}"
                - STYLE_TAG는 감성적이고 분위기를 표현하는 영어 단어 중 하나로 해줘 (예: 부드럽거나 사랑스럽거나 빈티지한 느낌)
-            
+               - 무조건 영어 대문자로 작성해줘
             결과는 아래 JSON 형식으로 영어로 정확히 반환해줘:
             
             {
