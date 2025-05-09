@@ -1,10 +1,13 @@
 package com.cloop.cloop.auth.domain;
 
+import com.cloop.cloop.looks.domain.Look;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(name = "`user`")
@@ -26,4 +29,8 @@ public class User {
 
     @Column(nullable = false)
     private String gender;
+
+    // 착장 테이블과 1:N 관계
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Look> looks;
 }
