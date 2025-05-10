@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8081
 
 spring:
   datasource:
@@ -31,7 +31,8 @@ spring:
 google:
   client-ids:
     - "407408718192.apps.googleusercontent.com" #웹 애플리케이션용
-#    - 프론트(안드로이드) 추가해야 함
+    - "282924798851-uh774utke2hogar5k15dro0c1klbg9la.apps.googleusercontent.com" # 안드로이드 client ID
+    - "282924798851-2lhulrjvhnhs963tnjq88n4iq72a8lia.apps.googleusercontent.com" # 웹 client ID
 
 logging:
   level:
