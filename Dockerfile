@@ -3,7 +3,7 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # JAR 복사
-COPY build/libs/*.jar /app/app.jar
+COPY build/libs/cloop-0.0.1-SNAPSHOT.jar /app/app.jar
 
 # application.yml 복사 (옵션)
 COPY src/main/resources/application.yml /app/config/application.yml
