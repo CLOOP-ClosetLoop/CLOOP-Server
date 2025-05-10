@@ -38,4 +38,8 @@ public class Look {
     @JoinColumn(name="userId", nullable = false)
     private User user;
 
+    // LookCloth 중간 테이블 설정
+    @OneToMany(mappedBy = "look", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LookCloth> lookClothList = new ArrayList<>();
+
 }
