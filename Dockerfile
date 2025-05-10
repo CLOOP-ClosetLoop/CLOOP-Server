@@ -3,7 +3,6 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # JAR 복사
-#COPY build/libs/app.jar /app/app.jar
 COPY build/libs/*.jar /app/app.jar
 
 # application.yml 복사 (옵션)
