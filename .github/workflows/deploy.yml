@@ -21,15 +21,13 @@ jobs:
       - name: Deploy to EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-            set -e  # 오류나면 즉시 SSH 종료 → Actions도 실패 표시됨
+            set -e  # 실패 시 즉시 종료
             cd CLOOP-Server
 
             # 최신 코드로 강제 리셋 (추적 파일만 영향)
             git fetch origin
             git reset --hard origin/main
-
-            git pull origin main
-          
+            
             chmod +x gradlew
             ./gradlew build -x test
 
