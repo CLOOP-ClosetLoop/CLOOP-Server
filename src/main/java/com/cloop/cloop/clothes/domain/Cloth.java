@@ -50,7 +50,5 @@ public class Cloth {
 
     private LocalDate lastWornAt;
 
-    @Column(nullable = false)
-    private String imageUrl;
 
 }
