@@ -3,9 +3,11 @@ package com.cloop.cloop.clothes.service;
 import com.cloop.cloop.auth.domain.User;
 import com.cloop.cloop.clothes.domain.Category;
 import com.cloop.cloop.clothes.domain.Cloth;
+import com.cloop.cloop.clothes.domain.Donation;
 import com.cloop.cloop.clothes.domain.Season;
-import com.cloop.cloop.clothes.dto.AIClothPredictionResponse;
+import com.cloop.cloop.clothes.dto.*;
 import com.cloop.cloop.clothes.repository.ClothRepository;
+import com.cloop.cloop.clothes.repository.DonationRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +20,24 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import com.cloop.cloop.clothes.dto.ClothCreateRequest;
-import com.cloop.cloop.clothes.dto.ClothCreateResponse;
+
 @Service
 @RequiredArgsConstructor
 public class ClothService {
     private final ClothRepository clothRepository;
+    private final DonationRepository donationRepository;
     @Value("${gemini.api.key}")
     private String apiKey;
-
+    @Value("${app.base-url}")
+    private String baseUrl;
     /**
      * 이미지 파일 업로드 후 URL 반환
      */
@@ -43,7 +48,7 @@ public class ClothService {
             Files.createDirectories(uploadPath.getParent());
             Files.write(uploadPath, file.getBytes());
 
-            String imageUrl = "http://localhost:8081/uploads/" + filename;
+            String imageUrl = baseUrl + "/uploads/" + filename;;
             return Map.of("imageUrl", imageUrl);
         } catch (IOException e) {
             throw new RuntimeException("이미지 업로드 실패", e);
@@ -169,5 +174,69 @@ public class ClothService {
                 .clothId(saved.getClothId())
                 .message("Cloth created successfully")
                 .build();
+    }
+
+    //옷 전체 조회
+    public List<ClothResponse> getAllClothes(User user) {
+        return clothRepository.findByUser(user).stream()
+                .map(cloth -> ClothResponse.builder()
+                        .clothId(cloth.getClothId())
+                        .clothName(cloth.getClothName())
+                        .category(cloth.getCategory().name())
+                        .brand(cloth.getBrand())
+                        .purchasedAt(cloth.getPurchasedAt())
+                        .color(cloth.getColor())
+                        .season(cloth.getSeason().name())
+                        .donated(cloth.getDonated())
+                        .imageUrl(cloth.getImageUrl())
+                        .lastWornAt(cloth.getLastWornAt())
+                        .build())
+                .toList();
+    }
+
+    //옷 기부 후보 조회(최근 6개월 이상 한 번도 안 입었고, 기부 안 한 옷)
+    public List<ClothDonationCandidateResponse> getDonationCandidates(User user) {
+        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
+
+        return clothRepository.findByUser(user).stream()
+                .filter(cloth -> !Boolean.TRUE.equals(cloth.getDonated()))
+                .filter(cloth -> cloth.getLastWornAt() != null && cloth.getLastWornAt().isBefore(sixMonthsAgo))
+                .map(cloth -> ClothDonationCandidateResponse.builder()
+                        .clothId(cloth.getClothId())
+                        .clothName(cloth.getClothName())
+                        .lastWornAt(cloth.getLastWornAt())
+                        .imageUrl(cloth.getImageUrl())
+                        .build())
+                .toList();
+    }
+    //옷 기부 상태 변경
+    public Map<String, Object> markAsDonated(Long clothId) {
+        Cloth cloth = clothRepository.findById(clothId)
+                .orElseThrow(() -> new RuntimeException("해당 옷을 찾을 수 없습니다."));
+
+        if (Boolean.TRUE.equals(cloth.getDonated())) {
+            throw new IllegalStateException("이미 기부 처리된 옷입니다.");
+        }
+
+        // 상태 업데이트
+        cloth.setDonated(true);
+
+        // 기부 정보 저장
+        Donation donation = Donation.builder()
+                .cloth(cloth)
+                .status(Donation.Status.COMPLETE)
+                .completedDate(LocalDate.now())
+                .build();
+
+        donationRepository.save(donation);
+
+        return Map.of(
+                "message", "기부가 완료되었습니다.",
+                "donation", Map.of(
+                        "clothName", cloth.getClothName(),
+                        "status", donation.getStatus().name().toLowerCase(),
+                        "completedDate", donation.getCompletedDate()
+                )
+        );
     }
 }
