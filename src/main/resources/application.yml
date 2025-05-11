@@ -49,3 +49,5 @@ gemini:
 
 app:
   base-url: ${APP_BASE_URL}
+
+SECRET_KEY: ${SECRET_KEY}
