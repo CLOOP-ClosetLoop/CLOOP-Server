@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
+@Table(name="look_cloth")
 @Getter
 @Setter
 @NoArgsConstructor
