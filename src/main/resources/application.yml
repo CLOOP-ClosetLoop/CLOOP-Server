@@ -47,3 +47,5 @@ gemini:
   api:
     key: ${GEMINI_API_KEY}
 
+app:
+  base-url: ${APP_BASE_URL}

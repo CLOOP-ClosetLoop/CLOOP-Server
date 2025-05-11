@@ -21,7 +21,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/clothes")
 @RequiredArgsConstructor
-@Tag(name = "Cloth", description = "옷 AI 분류 관련 API")
+@Tag(name = "Cloth", description = "옷 등록 및 조회 관련 API")
 public class ClothController {
     private final ClothService clothService;
     private final UserRepository userRepository;
@@ -55,5 +55,30 @@ public class ClothController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
+    }
+    @Operation(summary = "전체 옷 정보 조회")
+    @GetMapping
+    public ResponseEntity<?> getAllClothes(@AuthenticationPrincipal Long userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        return ResponseEntity.ok(clothService.getAllClothes(user));
+    }
+    @Operation(summary = "옷 기부 후보 조회", description = "6개월 이상 입지않은 옷을 조회합니다.")
+    @GetMapping("/donation-candidates")
+    public ResponseEntity<?> getDonationCandidates(@AuthenticationPrincipal Long userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+
+        return ResponseEntity.ok(clothService.getDonationCandidates(user));
+    }
+    @Operation(summary = "옷 기부 상태 변경", description = "옷을 기부상태로 변경합니다.")
+    @PatchMapping("/{clothId}/donate")
+    public ResponseEntity<?> donateCloth(@PathVariable Long clothId,
+                                         @RequestBody Map<String, Boolean> request) {
+        if (!Boolean.TRUE.equals(request.get("confirmed"))) {
+            return ResponseEntity.badRequest().body(Map.of("error", "기부 확인이 필요합니다."));
+        }
+
+        return ResponseEntity.ok(clothService.markAsDonated(clothId));
     }
 }
