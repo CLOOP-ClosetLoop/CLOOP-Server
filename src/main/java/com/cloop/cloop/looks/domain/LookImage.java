@@ -21,7 +21,9 @@ public class LookImage extends Image {
     // 연관 관계 편의 메서드
     public void setLook (Look look) {
         this.look = look;
-        look.getLookImageList().add(this);
+        if (look != null && !look.getLookImageList().contains(this)) {
+            look.getLookImageList().add(this);
+        }
     }
 
     public LookImage(String imageName, byte[] imageData) {
