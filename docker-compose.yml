@@ -32,6 +32,7 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: password
       GEMINI_API_KEY: ${GEMINI_API_KEY}
+      APP_BASE_URL: ${APP_BASE_URL}
       SECRET_KEY: ${SECRET_KEY}
 volumes:
   cloop-data:
