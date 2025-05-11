@@ -1,14 +1,13 @@
 package com.cloop.cloop.auth.config;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
@@ -18,21 +17,24 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private static final Dotenv dotenv = Dotenv.load();
-    private static final String SECRET_KEY = dotenv.get("SECRET_KEY");
+    @Value("${SECRET_KEY}")
+    private String SECRET_KEY;  // 인스턴스 필드
+
+    private Key SIGNING_KEY; // 정적 필드에서 인스턴스 필드로 변경
 
     private static final long EXPIRE_TIME = 1000 * 60 * 60 * 24;        // 액세스 토큰 (24시간)
     private static final long REFRESH_TIME = 1000 * 60 * 60 * 24 * 7;   // 리프레시 토큰 (7일)
     private final Map<String, String> refreshTokenStorage = new HashMap<>();        // 리프레시 토큰 저장소
 
-    // KEY 객체로 변환
-    private static final Key SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
 
-
-    static {
+    // SECRET_KEY 초기화
+    public JwtUtil(@Value("${SECRET_KEY}") String secretKey) {
+        this.SECRET_KEY = secretKey;
         if (SECRET_KEY == null) {
             throw new RuntimeException("Secret Key is null");
         }
+
+        this.SIGNING_KEY = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
         System.out.println("Secret Key Loaded: " + SECRET_KEY.substring(0, 5) + "****");
     }
 
