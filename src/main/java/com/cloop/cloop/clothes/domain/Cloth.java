@@ -2,11 +2,14 @@ package com.cloop.cloop.clothes.domain;
 
 
 import com.cloop.cloop.auth.domain.User;
+import com.cloop.cloop.looks.domain.LookCloth;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -52,4 +55,8 @@ public class Cloth {
 
     @Column(nullable = false)
     private String imageUrl;
+    // LookCloth 중간 테이블 설정
+    @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<LookCloth> lookClothList = new ArrayList<>();
+
 }
