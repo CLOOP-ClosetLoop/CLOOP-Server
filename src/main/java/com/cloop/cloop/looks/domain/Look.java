@@ -42,8 +42,10 @@ public class Look {
 
     // LookImage 추가 (연관관계 메서드)
     public void addLookImage(LookImage lookImage) {
+        if (lookImageList == null) {
+            lookImageList = new ArrayList<>();      // null 방지
+        }
         lookImage.setLook(this);
         this.lookImageList.add(lookImage);
     }
-
 }

@@ -8,6 +8,7 @@ import com.cloop.cloop.clothes.repository.ClothRepository;
 import com.cloop.cloop.global.file.ImageService;
 import com.cloop.cloop.looks.domain.Look;
 import com.cloop.cloop.looks.domain.LookCloth;
+import com.cloop.cloop.looks.domain.LookImage;
 import com.cloop.cloop.looks.dto.LookCalendarResponseDto;
 import com.cloop.cloop.looks.dto.LookRequestDto;
 import com.cloop.cloop.looks.dto.LookResponseDto;
@@ -73,6 +74,13 @@ public class LookService {
         // Look과 LookCloth 연결
         lookClothList.forEach(lookCloth -> lookCloth.setLook(look));
 
+        // LookImage 생성 (URL 또는 Base64 이미지)
+        if (lookRequestDto.getImageUrl() != null && !lookRequestDto.getImageUrl().isEmpty()) {
+            // LookImage 생성 (URL 이미지로 저장)
+            LookImage lookImage = new LookImage("Look Image", lookRequestDto.getImageUrl());
+            look.addLookImage(lookImage); // Look에 이미지 추가
+        }
+
         // Look 저장
         Look savedLook = lookRepository.save(look);
 
@@ -106,7 +114,10 @@ public class LookService {
 
     // Look의 첫 번째 이미지 URL 반환 (없을 경우 null)
     private String getFirstImageUrl(Look look) {
-        return look.getLookImageList().isEmpty() ? null : look.getLookImageList().get(0).getBase64Image();
+        if (look.getLookImageList() != null && !look.getLookImageList().isEmpty()) {
+            return look.getLookImageList().get(0).getDisplayImage();
+        }
+        return null;
     }
 
     public void uploadLookImage(List<MultipartFile> imageList, Look look){
