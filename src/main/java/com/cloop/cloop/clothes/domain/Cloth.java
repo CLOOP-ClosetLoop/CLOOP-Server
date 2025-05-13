@@ -55,6 +55,9 @@ public class Cloth {
 
     @Column(nullable = false)
     private String imageUrl;
+
+    @Column(nullable = false)
+    private int wearCount = 0;
     // LookCloth 중간 테이블 설정
     @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LookCloth> lookClothList = new ArrayList<>();

@@ -8,6 +8,7 @@ import com.cloop.cloop.clothes.domain.Season;
 import com.cloop.cloop.clothes.dto.*;
 import com.cloop.cloop.clothes.repository.ClothRepository;
 import com.cloop.cloop.clothes.repository.DonationRepository;
+import com.cloop.cloop.looks.domain.LookCloth;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -191,6 +192,7 @@ public class ClothService {
                         .season(cloth.getSeason().name())
                         .donated(cloth.getDonated())
                         .imageUrl(cloth.getImageUrl())
+                        .wearCount(cloth.getWearCount())
                         .lastWornAt(cloth.getLastWornAt())
                         .build())
                 .toList();
@@ -241,4 +243,28 @@ public class ClothService {
                 )
         );
     }
+    //    옷 착용 통게
+    public List<ClothStatisticsResponse> getClothStatistics(User user) {
+        List<Cloth> clothes = clothRepository.findByUser(user);
+
+        return clothes.stream()
+                .map(cloth -> {
+                    List<LookCloth> lookClothList = cloth.getLookClothList();
+
+                    long wearCount = lookClothList.size();
+                    LocalDate lastWornAt = lookClothList.stream()
+                            .map(lc -> lc.getLook().getCreatedAt())
+                            .max(LocalDate::compareTo)
+                            .orElse(null);
+
+                    return ClothStatisticsResponse.builder()
+                            .clothId(cloth.getClothId())
+                            .clothName(cloth.getClothName())
+                            .wearCount(wearCount)
+                            .lastWornAt(lastWornAt)
+                            .build();
+                })
+                .toList();
+    }
+
 }

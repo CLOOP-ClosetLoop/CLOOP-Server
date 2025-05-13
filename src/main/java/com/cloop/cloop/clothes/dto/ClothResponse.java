@@ -18,4 +18,5 @@ public class ClothResponse {
     private Boolean donated;
     private String imageUrl;
     private LocalDate lastWornAt;
+    private int wearCount;
 }

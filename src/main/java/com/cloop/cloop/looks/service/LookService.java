@@ -56,6 +56,11 @@ public class LookService {
         if (selectedCloths.isEmpty()) {
             throw new IllegalArgumentException("선택된 옷이 사용자 목록에 존재하지 않습니다.");
         }
+        // cloth 착용 통계 업데이트
+        selectedCloths.forEach(cloth -> {
+            cloth.setLastWornAt(LocalDate.now());
+            cloth.setWearCount(cloth.getWearCount() + 1);
+        });
 
         // LookCloth 생성 (Builder 패턴 사용)
         List<LookCloth> lookClothList = selectedCloths.stream()

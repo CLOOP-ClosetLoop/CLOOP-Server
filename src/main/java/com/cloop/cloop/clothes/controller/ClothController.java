@@ -81,4 +81,13 @@ public class ClothController {
 
         return ResponseEntity.ok(clothService.markAsDonated(clothId));
     }
+
+    @Operation(summary = "옷 착용 통계", description = "전체 옷 착용 통계를 반환합니다")
+    @GetMapping("/statistics")
+    public ResponseEntity<?> getClothStatistics(@AuthenticationPrincipal Long userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
+        return ResponseEntity.ok(clothService.getClothStatistics(user));
+    }
+
 }
