@@ -34,6 +34,8 @@ services:
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       APP_BASE_URL: ${APP_BASE_URL}
       SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - /home/ubuntu/CLOOP-Server/uploads:/app/uploads
 volumes:
   cloop-data:
 
