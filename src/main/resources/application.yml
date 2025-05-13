@@ -27,6 +27,7 @@ spring:
   web:
     resources:
       static-locations: file:uploads/
+      add-mappings: true
 
 google:
   client-ids:

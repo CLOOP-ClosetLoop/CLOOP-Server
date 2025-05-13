@@ -48,7 +48,9 @@ public class ClothService {
             Files.createDirectories(uploadPath.getParent());
             Files.write(uploadPath, file.getBytes());
 
-            String imageUrl = baseUrl + "/uploads/" + filename;;
+            String imageUrl = baseUrl + "/uploads/" + filename;
+            System.out.println("현재 실행 디렉토리: " + System.getProperty("user.dir"));
+
             return Map.of("imageUrl", imageUrl);
         } catch (IOException e) {
             throw new RuntimeException("이미지 업로드 실패", e);
