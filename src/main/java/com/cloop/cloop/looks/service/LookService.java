@@ -15,6 +15,7 @@ import com.cloop.cloop.looks.dto.LookRequestDto;
 import com.cloop.cloop.looks.dto.LookResponseDto;
 import com.cloop.cloop.looks.repository.LookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,6 +35,10 @@ public class LookService {
     private final ImageService imageService;
     private final LookRepository lookRepository;
     private final ClothRepository clothRepository;
+
+
+    @Value("${app.base-url}")
+    private String baseUrl;
 
     @Transactional
     public LookResponseDto createLook(LookRequestDto lookRequestDto, String token) {
@@ -144,7 +149,11 @@ public class LookService {
     // Look의 첫 번째 이미지 URL 반환 (없을 경우 null)
     private String getFirstImageUrl(Look look) {
         if (look.getLookImageList() != null && !look.getLookImageList().isEmpty()) {
-            return look.getLookImageList().get(0).getDisplayImage();
+            String displayImage = look.getLookImageList().get(0).getDisplayImage();
+            if (displayImage != null && !displayImage.isEmpty()) {
+                // 서버 URL 포함
+                return baseUrl + "/uploads/" + displayImage.replace("/app/uploads/look/", "");
+            }
         }
         return null;
     }
