@@ -152,7 +152,7 @@ public class LookService {
             String displayImage = look.getLookImageList().get(0).getDisplayImage();
             if (displayImage != null && !displayImage.isEmpty()) {
                 // 서버 URL 포함
-                return baseUrl + "/uploads/" + displayImage.replace("/app/uploads/look/", "");
+                return baseUrl + "/uploads/looks/" + displayImage.replace("/app/uploads/look/", "");
             }
         }
         return null;
