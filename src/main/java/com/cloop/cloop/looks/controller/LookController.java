@@ -89,5 +89,11 @@ public class LookController {
         }
 
     }
+    //사용자가 착장 등록한 날짜들 리스트로 가져오기
+    @GetMapping("/dates")
+    public ResponseEntity<?> getLookDates(@RequestHeader("Authorization") String token) {
+        String accessToken = token.replace("Bearer ", "");
+        return ResponseEntity.ok(lookService.getLookDates(accessToken));
+    }
 
 }

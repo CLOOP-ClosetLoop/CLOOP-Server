@@ -157,6 +157,12 @@ public class LookService {
         }
         return null;
     }
+    //사용자가 착장 등록한 날짜들 리스트로 가져오기
+    @Transactional(readOnly = true)
+    public List<LocalDate> getLookDates(String token) {
+        Long userId = jwtUtil.extractUserId(token);
+        return lookRepository.findDistinctCreatedAtByUserId(userId);
+    }
 
     public void uploadLookImage(List<MultipartFile> imageList, Look look){
         imageService.saveImage(imageList, look);
