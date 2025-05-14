@@ -17,5 +17,7 @@ public interface LookRepository extends JpaRepository<Look, Long> {
     @Query("SELECT l FROM Look l WHERE l.createdAt = :date")
     List<Look> findAllByCreatedAt(@Param("date") LocalDate date);
 
+    @Query("SELECT DISTINCT l.createdAt FROM Look l WHERE l.user.userId = :userId")
+    List<LocalDate> findDistinctCreatedAtByUserId(@Param("userId") Long userId);
 
 }
