@@ -4,6 +4,7 @@ import com.cloop.cloop.auth.config.JwtUtil;
 import com.cloop.cloop.auth.domain.User;
 import com.cloop.cloop.auth.repository.UserRepository;
 import com.cloop.cloop.clothes.domain.Cloth;
+import com.cloop.cloop.clothes.dto.ClothResponse;
 import com.cloop.cloop.clothes.repository.ClothRepository;
 import com.cloop.cloop.global.file.ImageService;
 import com.cloop.cloop.looks.domain.Look;
@@ -120,6 +121,22 @@ public class LookService {
                         .lookId(look.getLookId())
                         .createdAt(look.getCreatedAt())
                         .imageUrl(getFirstImageUrl(look))
+                        .clothes(look.getLookClothList().stream()
+                                .map(lookCloth -> lookCloth.getCloth())
+                                .map(cloth -> ClothResponse.builder()
+                                        .clothId(cloth.getClothId())
+                                        .clothName(cloth.getClothName())
+                                        .category(cloth.getCategory() != null ? cloth.getCategory().toString() : null)
+                                        .brand(cloth.getBrand())
+                                        .purchasedAt(cloth.getPurchasedAt())
+                                        .color(cloth.getColor())
+                                        .season(cloth.getSeason() != null ? cloth.getSeason().toString() : null)
+                                        .donated(cloth.getDonated())
+                                        .imageUrl(cloth.getImageUrl())
+                                        .lastWornAt(cloth.getLastWornAt())
+                                        .wearCount(cloth.getWearCount())
+                                        .build())
+                                .collect(Collectors.toList()))
                         .build())
                 .collect(Collectors.toList());
     }
