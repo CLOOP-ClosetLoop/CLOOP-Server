@@ -56,9 +56,15 @@ public class LookService {
         if (selectedCloths.isEmpty()) {
             throw new IllegalArgumentException("선택된 옷이 사용자 목록에 존재하지 않습니다.");
         }
+
+        // 캘린더에서 선택한 날짜를 가져옴
+        LocalDate wornDate = lookRequestDto.getWornDate() != null
+                ? lookRequestDto.getWornDate()
+                : LocalDate.now();
+
         // cloth 착용 통계 업데이트
         selectedCloths.forEach(cloth -> {
-            cloth.setLastWornAt(LocalDate.now());
+            cloth.setLastWornAt(wornDate);
             cloth.setWearCount(cloth.getWearCount() + 1);
         });
 
@@ -69,10 +75,11 @@ public class LookService {
                         .build())
                 .toList();
 
+
         // Look 생성 (Builder 패턴 사용)
         Look look = Look.builder()
                 .user(user)
-                .createdAt(LocalDate.now())
+                .createdAt(wornDate)
                 .lookClothList(lookClothList)
                 .build();
 
