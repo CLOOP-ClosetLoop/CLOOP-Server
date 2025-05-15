@@ -262,9 +262,9 @@ public class ClothService {
                             .clothName(cloth.getClothName())
                             .wearCount(wearCount)
                             .lastWornAt(lastWornAt)
+                            .imageUrl(cloth.getImageUrl())
                             .build();
                 })
                 .toList();
     }
-
 }

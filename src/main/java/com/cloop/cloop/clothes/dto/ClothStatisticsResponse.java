@@ -14,4 +14,5 @@ public class ClothStatisticsResponse {
     private String clothName;
     private long wearCount;
     private LocalDate lastWornAt;
+    private String imageUrl;
 }
