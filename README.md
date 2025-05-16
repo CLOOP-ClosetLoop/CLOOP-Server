@@ -1,4 +1,4 @@
-# [2025 APAC Google Solution Challenge] CLOOP-Android
+# [2025 APAC Google Solution Challenge] CLOOP-Server
 
 ![Frame](https://github.com/user-attachments/assets/30b46775-82fa-4c75-bfc9-c669f8c441a6)
 </br></br>
