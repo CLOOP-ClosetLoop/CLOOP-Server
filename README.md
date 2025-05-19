@@ -121,7 +121,7 @@ CLOOP is a sustainable wardrobe management app that helps you record, organize, 
 </br>
 
 ### Developer
-| [Juyeon Park](https://github.com/Zuyeonn) | [Sihyun Kim](https://github.com/5IHYUN) | [Wonjeong Ko](https://github.com/on1yoneprivate) |
+| [Juyeon Park](https://github.com/Zuyeonn) | [Sihyun Kim](https://github.com/5IHYUN) | [Wonjung Go](https://github.com/on1yoneprivate) |
 |:------:|:------:|:------:|
 |`FrontEnd`|`BackEnd`|`BackEnd`|
 
